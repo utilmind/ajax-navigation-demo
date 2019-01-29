@@ -1,5 +1,5 @@
 <?php
-$site_root = '/demos/2019/ajax-navigation/';
+$site_root = '/demos/2019/ajax-navigation';
 
 // GO
 $content = '';
