@@ -2,60 +2,72 @@
 wReady=function(f,w){var r=document.readyState;w||r!="loading"?r!="complete"?window.addEventListener("load",function(){f(3)}):f(3):document.addEventListener("DOMContentLoaded",function(){f(2)&&wReady(f)})}
 doInit=function(f,w){(w>1||(w&&document.readyState=="loading")||f(1))&&wReady(f,w>1)}
 
+var site_root = "/demos/2019/ajax-navigation";
 
 // The task. Catching all links in <nav> section
 var AJAXNavigation = {
-    this_navigator: false,
     hasHistoryAPI: false,
 
     init: function(){
-      this_navigator = this
-      hasHistoryAPI = !!(window.history && history.pushState)
+      var me = this
+      this.hasHistoryAPI = !!(window.history && history.pushState);
 
-      $('nav a').each(this_navigator.hook_link)
+      $("nav a").each(function() { me.hook_link(this) });
 
       // prevent leave + AJAX refresh hoox
-      $(window).bind('popstate', function(e){ this_navigator.navigate(location.href, 1) })
+      $(window).bind("popstate", function(e){ me.navigate(location.href, 1); });
     },
 
-    hook_link: function() {
-      // avoid double hook
-      if (!$(this).prop('ajax'))
-        $(this).prop('ajax', 1).click(function() { return this_navigator.navigate($(this).prop('href')) })
+    hook_link: function(e) {
+      if (!e || $(e).prop("ajax")) return; // avoid non-anchors and double hooks.
+
+      var me = this
+      $(e).prop('ajax', 1).click(function() {
+        return me.navigate($(this).prop('href'));
+      });
     },
 
     navigate: function(url, is_back) {
 
-      nav_url = url+'.php'
+      var me = this,
+          cur_url = url,
+          nav_url = url+'.php';
 
       // Preparing AJAX-request...
-      hourglass.show(1)
+      hourglass.show(1);
       $.ajax({
          url: nav_url,
 
          success: function(data, status) {
-           this_navigator.display_content(data)
+           me.display_content(data, cur_url);
          },
          error: function(jqXHR, textStatus, errorThrown) {
-           this_navigator.display_content(jqXHR.responseText)
+           me.display_content(jqXHR.responseText, cur_url);
          }
       }).always(function(jqXHR, exception) {
          if (!is_back)
-           window.history.pushState(null, null, url)
-         hourglass.show(0)
-      })
+           window.history.pushState(null, null, url);
+         hourglass.show(0);
+      });
 
-      return false
+      return false;
     },
 
-    display_content: function(data) {
-      $("#content-fill").html(data)
-      $("#content-fill nav a").each(this_navigator.hook_link)
+    display_content: function(data, url) {
+      var me = this
+      if (site_root !== "undefined") {
+        var i = url.indexOf(site_root);
+        if (i >= 0)
+          url = url.substr(i + site_root.length + 1);
+      }
+      $("#current-area").html(url);
+      $("#content-fill").html(data);
+      $("#content-fill nav a").each(function() { me.hook_link(this); });
     }
-}
+};
 
 
 doInit(function() {
-  if (typeof $=="undefined") return 1
-  AJAXNavigation.init()
-})
+  if (typeof $=="undefined") return 1;
+  AJAXNavigation.init();
+});
