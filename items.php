@@ -1,3 +1,6 @@
+<?php
+$site_root = '/demos/2019/ajax-navigation';
+?>
 				<h3>ITEMS PAGE</h3>
 				<p>
 					If no ID is used, the items list goes here and only this portion gets loaded into the content-fill div if the items link is clicked or someone visits www.sitename.com/items.
@@ -7,9 +10,9 @@
 					<br>
 					<br>
 <nav>
-					<a href="/items/1">Item 1</a>
+					<a href="<?=$site_root?>/items/1">Item 1</a>
 					<br>
-					<a href="/items/2">Item 2</a>
+					<a href="<?=$site_root?>/items/2">Item 2</a>
 </nav>
 					<br>
 					<br>

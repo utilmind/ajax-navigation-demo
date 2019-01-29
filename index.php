@@ -8,6 +8,8 @@ if ($path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '') {
   if ($is_ajax_request && ($i = strrpos($path, '.php'))) // strip ".php" added in AJAX request.
 
   $path = substr($path, 0, $i);
+  if ($site_root && (strpos($path, $site_root) == 0)) // strip site_root prefix from the path.
+    $path = substr($path, strlen($site_root));
   $path_folders = explode('/', ltrim($path, '/'));
 
   $cur_area = $path_folders[0];
@@ -94,6 +96,7 @@ END;
 				<p>
 					The navbar, this box and the footer are static.
 				</p>
+                                <p>Current area: <span id="current-area" style="padding: 4px 6px; border: 2px dotted red;"><?=$cur_area?></span></p>
 			</div>
 			<div class="jumbotron" id="content-fill" style="border: 2px dotted red;">
 				<!-- THE PAGES LOAD INTO THIS DIV. -->
